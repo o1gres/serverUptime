@@ -4,6 +4,18 @@ import os
 import time
 from threading import Thread
 
+
+serverList = {}
+serverList["162.244.29.55"] = 'developer3'
+serverList["64.137.210.237"] = 'developer2'
+
+
+print serverList
+
+uptime = []
+downtime = []
+isUp = []
+
 crash = 0;
 uptimed2 = 0;
 downtimed2 = 0;
@@ -20,6 +32,27 @@ db = pymysql.connect(host="localhost",    # your host, usually localhost
 
 cur = db.cursor()
 
+#try:
+
+if crash == 0: 
+	for key, value in serverList.items():
+		print key, value
+		crash = 1
+		#developer3
+		cur.execute('SELECT uptime FROM statistiche WHERE ip= "' + key + '";')
+		result  = cur.fetchone()
+		uptime.append(int(result[0]))
+
+		cur.execute('SELECT downtime FROM statistiche WHERE ip="' + key + '";')
+		result  = cur.fetchone()
+		downtime.append(int(result[0]))
+
+#except Exception, e:
+#	print "Error with db: "+e.value
+
+
+
+'''
 try:
 	if crash == 0:
 		crash = 1
@@ -46,7 +79,7 @@ try:
 
 except Exception, e:
 	print "Error with db: "+e.value
-
+'''
 
 # UPDATE `statistiche` SET `uptime` = '10' WHERE `statistiche`.`ip` = '162.244.29.55';
 
