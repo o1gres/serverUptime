@@ -2,27 +2,25 @@
 import pymysql.cursors
 import os
 import time
+import traceback
+import sys
 from threading import Thread
 
 
 serverList = {}
 serverList["162.244.29.55"] = 'developer3'
 serverList["64.137.210.237"] = 'developer2'
-
-
-print serverList
+serverList["64.137.233.195"] = 'windows'
 
 uptime = []
 downtime = []
 isUp = []
 
-crash = 0;
-uptimed2 = 0;
-downtimed2 = 0;
-uptimed3 = 0;
-downtimed3 = 0;
-isUp2 = 0;
-isUp3 = 0;
+crash = 0
+i = 0
+frequencyChekServerStatus = 50 #in seconds
+
+
 
 #DATABASE
 db = pymysql.connect(host="localhost",    # your host, usually localhost
@@ -34,62 +32,40 @@ cur = db.cursor()
 
 #try:
 
-if crash == 0: 
-	for key, value in serverList.items():
-		print key, value
-		crash = 1
-		#developer3
-		cur.execute('SELECT uptime FROM statistiche WHERE ip= "' + key + '";')
-		result  = cur.fetchone()
-		uptime.append(int(result[0]))
+def developer():
+	
+	global serverList
+	global uptime
+	global downtime
+	global isUp
+	global crash
+	
 
-		cur.execute('SELECT downtime FROM statistiche WHERE ip="' + key + '";')
-		result  = cur.fetchone()
-		downtime.append(int(result[0]))
+	if crash == 0: 
+		for key, value in serverList.items():
+			try:
+				crash = 1
+				cur.execute('SELECT uptime FROM statistiche WHERE ip= "' + key + '";')
+				result  = cur.fetchone()
+				uptime.append(int(result[0]))
 
-#except Exception, e:
-#	print "Error with db: "+e.value
-
-
-
-'''
-try:
-	if crash == 0:
-		crash = 1
-		#developer3
-		cur.execute("SELECT uptime FROM statistiche WHERE ip='162.244.29.55'")
-		result  = cur.fetchone()
-		uptimed3 =  int(result[0])
-
-		cur.execute("SELECT downtime FROM statistiche WHERE ip='162.244.29.55'")
-		result  = cur.fetchone()
-		downtimed3 =  int(result[0])
-		
-
-		#developer2
-		cur.execute("SELECT uptime FROM statistiche WHERE ip='64.137.210.237'")
-		result  = cur.fetchone()
-		uptimed2 =  int(result[0])
-
-		cur.execute("SELECT downtime FROM statistiche WHERE ip='64.137.210.237'")
-		result  = cur.fetchone()
-		downtimed2 =  int(result[0])
-
-		db.close()
-
-except Exception, e:
-	print "Error with db: "+e.value
-'''
-
-# UPDATE `statistiche` SET `uptime` = '10' WHERE `statistiche`.`ip` = '162.244.29.55';
-
-
-#PING
+				cur.execute('SELECT downtime FROM statistiche WHERE ip="' + key + '";')
+				result  = cur.fetchone()
+				downtime.append(int(result[0]))
+			except Exception:
+				print "IP: "+str(key)+" not found in table statistics"
 
 
 
-#developer3
-def developer3loop(uptimed3, downtimed3):
+
+def developer3loop(uptime, downtime):
+	
+	global serverList
+	global isUp
+	global crash
+	global i
+	global frequencyChekServerStatus
+
 	db3 = pymysql.connect(host="localhost",    # your host, usually localhost
 	                     user="root",         # your username
 	                     password="root",  # your password
@@ -97,70 +73,51 @@ def developer3loop(uptimed3, downtimed3):
 
 	cur3 = db3.cursor()
 
-	developer3 = "162.244.29.55"
+	
 	
 	while True:
-		try:
-			response3 = os.system("ping -c 1 " + developer3)
+		for key, value in serverList.items():
+			print "for"+str(i)	
+			developer3 = str(key)
+			print "developer3: "+str(developer3)
+			
+			try:
+				response3 = os.system("ping -c 1 " + developer3)
 
-			#and then check the response...
-			if response3 == 0:
-				isUp = 1
-				uptimed3 = uptimed3 + 60
-				sqlInsert3 = "UPDATE `statistiche` SET `uptime` =" + str(uptimed3) +" WHERE `statistiche`.`ip` = '162.244.29.55';"
-				cur3.execute(sqlInsert3)
-				db3.commit()
-			  	#print developer3, 'is up!'
-			else:
-				isUp = 0
-				downtimed3 = downtimed3 + 60
-				sqlInsert2 = "UPDATE `statistiche` SET `downtime` =" + str(downtimed3) +" WHERE `statistiche`.`ip` = '162.244.29.55';"
-				cur3.execute(sqlInsert2)
-				db3.commit()
-			  	#print developer3, 'is down!'
-			time.sleep (60)	
-		except Exception, e:
-			print "Error with db: "+e.value
+				#and then check the response...
+				if response3 == 0:
+					isUp.insert(i, 1)
+					#isUp[i] = 1
+					uptimeTmp = uptime[i]
+					uptime.insert(i, uptimeTmp+frequencyChekServerStatus)
+					#uptime[i] = uptime[i] + 60
+					sqlInsert3 = 'UPDATE `statistiche` SET `uptime` = "' + str(uptime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
+					cur3.execute(sqlInsert3)
+					db3.commit()
+				  	#print developer3, 'is up!'
+				else:
+					isUp.insert(i, 0)
+					#isUp[i] = 1
+					downtimeTmp = downtime[i]
+					downtime.insert(i, downtimeTmp+frequencyChekServerStatus)
+					sqlInsert2 = 'UPDATE `statistiche` SET `downtime` = "' + str(downtime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
+					cur3.execute(sqlInsert2)
+					db3.commit()
+				  	#print developer3, 'is down!'
+			
+			
+			except Exception:
+				print(traceback.format_exc())
+    			print(sys.exc_info()[0])
 
+			i = i+1	
+			time.sleep(frequencyChekServerStatus)
+		print "while"
+		i=0	
+		time.sleep (5)
+		print "lol"
+			
+			
 
-
-#developer2
-def developer2loop(uptimed2, downtimed2):
-
-	db2 = pymysql.connect(host="localhost",    # your host, usually localhost
-	                     user="root",         # your username
-	                     password="root",  # your password
-	                     db="serevrstatus")        # name of the data base
-
-	cur2 = db2.cursor()
-
-	developer2git = "64.137.210.238"
-	while True:
-		response2 = os.system("ping -c 1 " + developer2git)
-		print response2
-		#and then check the response...
-		if response2 == 0:
-			isUp = 1
-			uptimed2 = uptimed2 + 60
-			sqlInsert = "UPDATE `statistiche` SET `uptime` =" + str(uptimed2) +" WHERE `statistiche`.`ip` = '64.137.210.237';"
-			cur2.execute(sqlInsert)
-			db2.commit()
-		  	#print developer2git, 'is up!'
-		else:
-			isUp = 0
-			downtimed2 = downtimed2 + 60
-			sqlInsert = "UPDATE `statistiche` SET `downtime` =" + str(downtimed2) +" WHERE `statistiche`.`ip` = '64.137.210.237';"
-			cur2.execute(sqlInsert)
-			db2.commit()
-		  	#print developer2git, 'is down!'
-		time.sleep (60)	
-
-
-threadDeveloper2 = Thread(target=developer2loop, args=(uptimed2, downtimed2))
-threadDeveloper2.deamon = True
-#time.sleep(2)
-threadDeveloper3 = Thread(target=developer3loop, args=(uptimed3, downtimed3))
-threadDeveloper3.deamon = True
-
-threadDeveloper2.start()
-threadDeveloper3.start()
+developer()
+developer3loop(uptime, downtime)
