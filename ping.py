@@ -82,27 +82,22 @@ def developer3loop(uptime, downtime):
 			try:
 				response3 = os.system("ping -c 1 " + developer3)
 
-				#and then check the response...
 				if response3 == 0:
 					isUp.insert(i, 1)
-					#isUp[i] = 1
 					uptimeTmp = uptime[i]
 					uptime.insert(i, uptimeTmp+frequencyChekServerStatus)
-					#uptime[i] = uptime[i] + 60
 					sqlInsert3 = 'UPDATE `statistiche` SET `uptime` = "' + str(uptime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
 					cur3.execute(sqlInsert3)
 					db3.commit()
-				  	#print developer3, 'is up!'
+
 				else:
 					isUp.insert(i, 0)
-					#isUp[i] = 1
 					downtimeTmp = downtime[i]
 					downtime.insert(i, downtimeTmp+frequencyChekServerStatus)
 					sqlInsert2 = 'UPDATE `statistiche` SET `downtime` = "' + str(downtime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
 					cur3.execute(sqlInsert2)
 					db3.commit()
-				  	#print developer3, 'is down!'
-			
+
 			
 			except Exception:
 				print(traceback.format_exc())
