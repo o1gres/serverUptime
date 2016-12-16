@@ -23,10 +23,10 @@ frequencyChekServerStatus = 50 #in seconds
 
 
 #DATABASE
-db = pymysql.connect(host="localhost",    # your host, usually localhost
-                     user="root",         # your username
-                     password="root",  # your password
-                     db="serevrstatus")        # name of the data base
+db = pymysql.connect(host="localhost",    		# your host, usually localhost
+                     user="root",         		# your username
+                     password="root",  			# your password
+                     db="serevrstatus")        	# name of the data base
 
 cur = db.cursor()
 
@@ -66,10 +66,10 @@ def developer3loop(uptime, downtime):
 	global i
 	global frequencyChekServerStatus
 
-	db3 = pymysql.connect(host="localhost",    # your host, usually localhost
-	                     user="root",         # your username
-	                     password="root",  # your password
-	                     db="serevrstatus")        # name of the data base
+	db3 = pymysql.connect(host="localhost",    	# your host, usually localhost
+	                     user="root",         	# your username
+	                     password="root",  		# your password
+	                     db="serevrstatus")     # name of the data base
 
 	cur3 = db3.cursor()
 
@@ -77,9 +77,7 @@ def developer3loop(uptime, downtime):
 	
 	while True:
 		for key, value in serverList.items():
-			print "for"+str(i)	
 			developer3 = str(key)
-			print "developer3: "+str(developer3)
 			
 			try:
 				response3 = os.system("ping -c 1 " + developer3)
@@ -112,12 +110,8 @@ def developer3loop(uptime, downtime):
 
 			i = i+1	
 			time.sleep(frequencyChekServerStatus)
-		print "while"
 		i=0	
 		time.sleep (5)
-		print "lol"
 			
-			
-
 developer()
 developer3loop(uptime, downtime)
