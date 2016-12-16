@@ -31,6 +31,28 @@ db = pymysql.connect(host="localhost",    		# your host, usually localhost
 cur = db.cursor()
 
 #try:
+#INSERT INTO `statistiche` (`ip`, `name`) VALUES ('127.0.0.1', 'pippo') ON DUPLICATE KEY UPDATE ip = '127.0.0.1'
+
+def initializeDB():
+	#DATABASE
+	db = pymysql.connect(host="localhost",    		# your host, usually localhost
+	                     user="root",         		# your username
+	                     password="root",  			# your password
+	                     db="serevrstatus")        	# name of the data base
+
+	cur = db.cursor()
+
+
+	for key, value in serverList.items():
+			try:
+				sqlInsert = 'INSERT INTO `statistiche` (`ip`, `name`) VALUES ("' + str(key) + '","'+ value + '" ) ON DUPLICATE KEY UPDATE ip = "' + str(key) + '"' 
+				cur.execute(sqlInsert)
+				db.commit()
+			except Exception:
+				print "IP: "+str(key)+" error initializing table"
+
+
+
 
 def developer():
 	
@@ -107,6 +129,7 @@ def developer3loop(uptime, downtime):
 			time.sleep(frequencyChekServerStatus)
 		i=0	
 		time.sleep (5)
-			
+
+initializeDB()		
 developer()
 developer3loop(uptime, downtime)
