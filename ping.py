@@ -4,13 +4,14 @@ import os
 import time
 import traceback
 import sys
+import sqlite3
 from threading import Thread
 
 
 serverList = {}
 serverList["162.244.29.55"] = 'developer3'
 serverList["64.137.210.237"] = 'developer2'
-serverList["64.137.233.195"] = 'windows'
+serverList["45.62.239.109"] = 'windows'
 
 uptime = []
 downtime = []
@@ -23,10 +24,12 @@ frequencyChekServerStatus = 50 #in seconds
 
 
 #DATABASE
-db = pymysql.connect(host="localhost",    		# your host, usually localhost
-                     user="root",         		# your username
-                     password="root",  			# your password
-                     db="serevrstatus")        	# name of the data base
+	
+db = sqlite3.connect('/home/sergio/data/serverstatus')
+#db = pymysql.connect(host="localhost",    		# your host, usually localhost
+#                     user="root",         		# your username
+#                     password="root",  			# your password
+#                     db="serevrstatus")        	# name of the data base
 
 cur = db.cursor()
 
@@ -35,10 +38,11 @@ cur = db.cursor()
 
 def initializeDB():
 	#DATABASE
-	db = pymysql.connect(host="localhost",    		# your host, usually localhost
-	                     user="root",         		# your username
-	                     password="root",  			# your password
-	                     db="serevrstatus")        	# name of the data base
+	db = sqlite3.connect('/home/sergio/data/serverstatus')
+	#db = pymysql.connect(host="localhost",    		# your host, usually localhost
+	#                     user="root",         		# your username
+	#                     password="root",  			# your password
+	#                     db="serevrstatus")        	# name of the data base
 
 	cur = db.cursor()
 
@@ -88,10 +92,11 @@ def developer3loop(uptime, downtime):
 	global i
 	global frequencyChekServerStatus
 
-	db3 = pymysql.connect(host="localhost",    	# your host, usually localhost
-	                     user="root",         	# your username
-	                     password="root",  		# your password
-	                     db="serevrstatus")     # name of the data base
+	db3 = sqlite3.connect('/home/sergio/data/serverstatus')
+	#db3 = pymysql.connect(host="localhost",    	# your host, usually localhost
+	#                     user="root",         	# your username
+	#                     password="root",  		# your password
+	#                     db="serevrstatus")     # name of the data base
 
 	cur3 = db3.cursor()
 
