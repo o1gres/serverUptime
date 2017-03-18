@@ -25,7 +25,7 @@ frequencyChekServerStatus = 50 #in seconds
 
 #DATABASE
 	
-db = sqlite3.connect('/home/sergio/data/serverstatus')
+db = sqlite3.connect('/home/sergio/Documents/statistics/serverUptime/serverstatus')
 #db = pymysql.connect(host="localhost",    		# your host, usually localhost
 #                     user="root",         		# your username
 #                     password="root",  			# your password
@@ -38,7 +38,7 @@ cur = db.cursor()
 
 def initializeDB():
 	#DATABASE
-	db = sqlite3.connect('/home/sergio/data/serverstatus')
+	db = sqlite3.connect('/home/sergio/Documents/statistics/serverUptime/serverstatus')
 	#db = pymysql.connect(host="localhost",    		# your host, usually localhost
 	#                     user="root",         		# your username
 	#                     password="root",  			# your password
@@ -92,7 +92,7 @@ def developer3loop(uptime, downtime):
 	global i
 	global frequencyChekServerStatus
 
-	db3 = sqlite3.connect('/home/sergio/data/serverstatus')
+	db3 = sqlite3.connect('/home/sergio/Documents/statistics/serverUptime/serverstatus')
 	#db3 = pymysql.connect(host="localhost",    	# your host, usually localhost
 	#                     user="root",         	# your username
 	#                     password="root",  		# your password
@@ -116,6 +116,7 @@ def developer3loop(uptime, downtime):
 					sqlInsert3 = 'UPDATE `statistiche` SET `uptime` = "' + str(uptime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
 					cur3.execute(sqlInsert3)
 					db3.commit()
+					uptimeTmp = 0
 
 				else:
 					isUp.insert(i, 0)
@@ -124,6 +125,7 @@ def developer3loop(uptime, downtime):
 					sqlInsert2 = 'UPDATE `statistiche` SET `downtime` = "' + str(downtime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
 					cur3.execute(sqlInsert2)
 					db3.commit()
+					downtimeTmp = 0
 
 			
 			except Exception:
