@@ -5,8 +5,15 @@ import time
 import traceback
 import sys
 import sqlite3
+import logging
 from threading import Thread
 
+
+#LOGGER
+LOG_FILENAME = 'log.out'
+logging.basicConfig(filename=LOG_FILENAME,
+                    level=logging.DEBUG,
+                    )
 
 serverList = {}
 serverList["162.244.29.55"] = 'developer3'
@@ -38,6 +45,8 @@ cur = db.cursor()
 
 def initializeDB():
 	#DATABASE
+
+	logging.debug('initializeDB')
 	db = sqlite3.connect('/home/sergio/data/serverstatus')
 	#db = pymysql.connect(host="localhost",    		# your host, usually localhost
 	#                     user="root",         		# your username
@@ -73,10 +82,12 @@ def developer():
 				crash = 1
 				cur.execute('SELECT uptime FROM statistiche WHERE ip= "' + key + '";')
 				result  = cur.fetchone()
+				logging.debug('DEVELOPER - uptime from database: '+ str(result)+' for ip: '+str(key))
 				uptime.append(int(result[0]))
 
 				cur.execute('SELECT downtime FROM statistiche WHERE ip="' + key + '";')
 				result  = cur.fetchone()
+				logging.debug('DEVELOPER - downtime from database: '+str(result)+' for ip: '+str(key))
 				downtime.append(int(result[0]))
 			except Exception:
 				print "IP: "+str(key)+" not found in table statistics"
@@ -91,6 +102,8 @@ def developer3loop(uptime, downtime):
 	global crash
 	global i
 	global frequencyChekServerStatus
+
+
 
 	db3 = sqlite3.connect('/home/sergio/data/serverstatus')
 	#db3 = pymysql.connect(host="localhost",    	# your host, usually localhost
@@ -111,8 +124,10 @@ def developer3loop(uptime, downtime):
 
 				if response3 == 0:
 					isUp.insert(i, 1)
+					logging.debug("i vale: "+str(i));
 					uptimeTmp = uptime[i]
 					uptime.insert(i, uptimeTmp+frequencyChekServerStatus)
+					logging.debug('DEVELOPER3LOOP - uptime for ip '+ str(key) + ' : ' + str(uptimeTmp))
 					sqlInsert3 = 'UPDATE `statistiche` SET `uptime` = "' + str(uptime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
 					cur3.execute(sqlInsert3)
 					db3.commit()
@@ -121,6 +136,7 @@ def developer3loop(uptime, downtime):
 					isUp.insert(i, 0)
 					downtimeTmp = downtime[i]
 					downtime.insert(i, downtimeTmp+frequencyChekServerStatus)
+					logging.debug('DEVELOPER3LOOP - downtime for ip '+ str(key) + ' : ' + str(downtimeTmp))
 					sqlInsert2 = 'UPDATE `statistiche` SET `downtime` = "' + str(downtime[i]) +'" WHERE `statistiche`.`ip` = "' + str(key) + '";'
 					cur3.execute(sqlInsert2)
 					db3.commit()
@@ -133,8 +149,14 @@ def developer3loop(uptime, downtime):
 			i = i+1	
 			time.sleep(frequencyChekServerStatus)
 		i=0	
-		time.sleep (5)
+ 		time.sleep (5)
 
 initializeDB()		
 developer()
 developer3loop(uptime, downtime)
+
+f = open(LOG_FILENAME, 'rt')
+try:
+    body = f.read()
+finally:
+    f.close()
