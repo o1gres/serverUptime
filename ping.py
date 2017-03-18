@@ -7,6 +7,8 @@ import sys
 import sqlite3
 from threading import Thread
 
+dir = os.path.dirname(__file__)
+
 
 serverList = {}
 serverList["162.244.29.55"] = 'developer3'
@@ -25,7 +27,7 @@ frequencyChekServerStatus = 50 #in seconds
 
 #DATABASE
 	
-db = sqlite3.connect('/home/sergio/Documents/statistics/serverUptime/serverstatus')
+db = sqlite3.connect('serverstatus')
 #db = pymysql.connect(host="localhost",    		# your host, usually localhost
 #                     user="root",         		# your username
 #                     password="root",  			# your password
@@ -38,7 +40,8 @@ cur = db.cursor()
 
 def initializeDB():
 	#DATABASE
-	db = sqlite3.connect('/home/sergio/Documents/statistics/serverUptime/serverstatus')
+	filename = os.path.join(dir, 'serverstatus')
+	db = sqlite3.connect(filename)
 	#db = pymysql.connect(host="localhost",    		# your host, usually localhost
 	#                     user="root",         		# your username
 	#                     password="root",  			# your password
@@ -92,7 +95,8 @@ def developer3loop(uptime, downtime):
 	global i
 	global frequencyChekServerStatus
 
-	db3 = sqlite3.connect('/home/sergio/Documents/statistics/serverUptime/serverstatus')
+	filename = os.path.join(dir, 'serverstatus')
+	db3 = sqlite3.connect(filename)
 	#db3 = pymysql.connect(host="localhost",    	# your host, usually localhost
 	#                     user="root",         	# your username
 	#                     password="root",  		# your password
